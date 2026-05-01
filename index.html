@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Social Vibes – Lock Your Spot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --amber:      #D4831A;
+      --amber-dark: #8F530B;
+      --amber-glow: rgba(212,131,26,0.18);
+      --cream:      #FDF6EC;
+      --ink:        #1C1008;
+      --muted:      #7A6249;
+      --border:     rgba(180,130,70,0.22);
+      --card-bg:    #FFFDF8;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Decorative background texture */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 80% 10%, rgba(212,131,26,0.10) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 10% 90%, rgba(212,131,26,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Floating grain overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    .wrap {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Header ── */
+    .header {
+      text-align: center;
+      margin-bottom: 1.75rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #FAC775;
+      color: #412402;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+    }
+
+    .badge::before { content: '✦'; font-size: 9px; }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 34px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 300;
+      line-height: 1.6;
+    }
+
+    .price-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .price-old {
+      font-size: 15px;
+      color: #B0967C;
+      text-decoration: line-through;
+      font-weight: 300;
+    }
+
+    .price-new {
+      font-family: 'Playfair Display', serif;
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--amber);
+      letter-spacing: -0.5px;
+    }
+
+    .price-tag {
+      font-size: 12px;
+      color: var(--muted);
+      padding: 3px 10px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-weight: 400;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow:
+        0 2px 0 rgba(212,131,26,0.06),
+        0 8px 32px rgba(80,40,0,0.07),
+        inset 0 1px 0 rgba(255,255,255,0.9);
+    }
+
+    /* ── Fields ── */
+    .field {
+      margin-bottom: 1.1rem;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--cream);
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .select-wrap {
+      position: relative;
+    }
+
+    .select-wrap::after {
+      content: '▾';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+      font-size: 12px;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--amber);
+      box-shadow: 0 0 0 3px var(--amber-glow);
+      background: #fff;
+    }
+
+    .field input::placeholder { color: #C4AD97; }
+
+    /* ── Radio ── */
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: border-color 0.18s, background 0.18s;
+      user-select: none;
+    }
+
+    .radio-option:hover {
+      border-color: var(--amber);
+      background: rgba(212,131,26,0.04);
+    }
+
+    .radio-option input[type="radio"] {
+      accent-color: var(--amber);
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .radio-option input[type="radio"]:checked + .radio-label {
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .radio-option:has(input:checked) {
+      border-color: var(--amber);
+      background: rgba(212,131,26,0.06);
+    }
+
+    .radio-label {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.4;
+      transition: color 0.15s;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.4rem 0;
+    }
+
+    /* ── Note ── */
+    .note {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 1.25rem;
+      padding: 10px 14px;
+      background: rgba(212,131,26,0.05);
+      border-left: 2px solid #FAC775;
+      border-radius: 0 8px 8px 0;
+    }
+
+    /* ── Button ── */
+    .submit-btn {
+      width: 100%;
+      padding: 13px;
+      font-size: 15px;
+      font-weight: 500;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--amber);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      letter-spacing: 0.01em;
+      transition: background 0.18s, transform 0.1s, box-shadow 0.18s;
+      box-shadow: 0 4px 16px rgba(180,100,20,0.22);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .submit-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.12), transparent);
+      pointer-events: none;
+    }
+
+    .submit-btn:hover {
+      background: var(--amber-dark);
+      box-shadow: 0 6px 22px rgba(140,70,10,0.28);
+    }
+
+    .submit-btn:active { transform: scale(0.98); }
+
+    /* ── Success ── */
+    .success {
+      display: none;
+      text-align: center;
+      padding: 2.5rem 1rem;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .success-icon {
+      font-size: 48px;
+      margin-bottom: 14px;
+      display: block;
+      animation: pop 0.4s 0.1s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+
+    @keyframes pop {
+      from { transform: scale(0.6); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    .success-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .success-sub {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    /* ── Error shake ── */
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%      { transform: translateX(-6px); }
+      40%      { transform: translateX(6px); }
+      60%      { transform: translateX(-4px); }
+      80%      { transform: translateX(4px); }
+    }
+
+    .shake { animation: shake 0.4s ease; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div class="badge">Lucky Contest</div>
+      <h1>The Social Vibes</h1>
+      <p class="subtitle">Secure your spot before passes run out!</p>
+      <div class="price-row">
+        <span class="price-old">₹999</span>
+        <span class="price-new">₹349</span>
+        <span class="price-tag">only</span>
+      </div>
+    </div>
+
+    <div class="card" id="form-card">
+      <div class="field">
+        <label>Full Name</label>
+        <input type="text" id="name" placeholder="Your full name" autocomplete="name" />
+      </div>
+
+      <div class="field">
+        <label>Phone Number</label>
+        <input type="tel" id="phone" placeholder="+91 00000 00000" autocomplete="tel" />
+      </div>
+
+      <div class="field">
+        <label>How did you find us?</label>
+        <div class="select-wrap">
+          <select id="source">
+            <option value="">Select an option</option>
+            <option>Instagram story</option>
+            <option>Instagram reel</option>
+            <option>DM / comment</option>
+            <option>Friend referred me</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="field">
+        <label>Are you serious about attending?</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="serious" value="yes" />
+            <span class="radio-label">Yes, I am ready to join</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="serious" value="no" />
+            <span class="radio-label">No</span>
+          </label>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <p class="note">We have very limited passes at this price. Please fill this form only if you genuinely plan to attend. We want every spot to go to someone who truly wants to be there.</p>
+
+      <button class="submit-btn" id="submit-btn" onclick="handleSubmit()">Lock my spot at ₹349</button>
+    </div>
+
+    <div class="success" id="success-card">
+      <span class="success-icon">🎉</span>
+      <div class="success-title">You're in the contest!</div>
+      <p class="success-sub">We'll reach out to you soon with the next steps.<br>See you at The Social Vibes!</p>
+    </div>
+  </div>
+
+  <script>
+    const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyUe5S_tl7GB3mmIM_tl5oWNPTxD8ANMHkUjfqVT-Pf4zzZnogQ-neAILEVnN55inELkg/exec';
+
+    async function handleSubmit() {
+      const name    = document.getElementById('name').value.trim();
+      const phone   = document.getElementById('phone').value.trim();
+      const source  = document.getElementById('source').value;
+      const serious = document.querySelector('input[name="serious"]:checked');
+      const btn     = document.getElementById('submit-btn');
+
+      // Validation
+      if (!name || !phone || !source || !serious) {
+        btn.classList.remove('shake');
+        void btn.offsetWidth;
+        btn.classList.add('shake');
+        btn.textContent = 'Please fill all fields ↑';
+        setTimeout(() => {
+          btn.textContent = 'Lock my spot at ₹349';
+          btn.classList.remove('shake');
+        }, 2000);
+        return;
+      }
+
+      // Loading state
+      btn.disabled = true;
+      btn.textContent = 'Submitting…';
+
+      try {
+        await fetch(SHEET_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            phone,
+            source,
+            serious: serious.value === 'yes' ? 'Yes, I am ready to join' : 'No'
+          })
+        });
+
+        // Success — show confirmation
+        document.getElementById('form-card').style.display = 'none';
+        const sc = document.getElementById('success-card');
+        sc.style.display = 'block';
+
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = 'Something went wrong. Try again.';
+        setTimeout(() => { btn.textContent = 'Lock my spot at ₹349'; }, 3000);
+      }
+    }
+  </script>
+</body>
+</html>
